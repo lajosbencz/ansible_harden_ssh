@@ -1,0 +1,78 @@
+---
+- name: Fact is harden_ssh_port is set to 22
+  set_fact:
+    is_default_port: (harden_ssh_port | int) == 22
+
+- name: Check if ssh is open on 22
+  wait_for:
+    host: "{{ ansible_host }}"
+    port: 22
+    state: started
+    connect_timeout: 8
+    timeout: 10
+  ignore_errors: true
+  delegate_to: localhost
+  register: r_default_ssh
+  when: not is_default_port
+
+- name: Fact if port needs change
+  set_fact:
+    needs_port_change: "{{ r_default_ssh is defined and r_default_ssh is not failed }}"
+
+- name: Fact temporary configured_port
+  set_fact:
+    configured_port: "{{ ansible_port }}"
+  when: needs_port_change
+
+- name: Catch 22
+  set_fact:
+    ansible_port: 22
+  when: needs_port_change
+
+- name: Set Port in sshd_config
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^[#\s]*Port\s'
+    line: "Port {{ harden_ssh_port }}"
+  when: needs_port_change
+
+- name: Disallow root password
+  lineinfile:
+    dest: "/etc/ssh/sshd_config"
+    regexp: '^[#\s]*PermitRootLogin\s'
+    line: "PermitRootLogin without-password"
+  register: r_root_pw
+
+- name: Reload sshd
+  systemd:
+    name: sshd
+    state: reloaded
+  when: needs_port_change or r_root_pw.changed
+
+- name: Fact restore ansible_port
+  set_fact:
+    ansible_port: "{{ configured_port }}"
+  when: needs_port_change
+
+- name: Fact installed packages
+  package_facts:
+    manager: auto
+
+- name: Fact is ufw installed
+  set_fact:
+    is_ufw_installed: 'ufw' in ansible_facts.packages
+
+- name: Remove ufw 22/tcp
+  ufw:
+    rule: deny
+    port: 22
+    proto: tcp
+  when: needs_port_change and is_ufw_installed
+
+- name: Allow ufw port/tcp
+  ufw:
+    rule: allow
+    port: "{{ harden_ssh_port }}"
+    proto: tcp
+  when: is_ufw_installed
+...
