@@ -10,6 +10,6 @@ galaxy_info:
 
   min_ansible_version: 2.13
 
-  galaxy_tags: [ ssh,sshd,security ]
+  galaxy_tags: [ ssh, sshd, security ]
 
 dependencies: [ ]
