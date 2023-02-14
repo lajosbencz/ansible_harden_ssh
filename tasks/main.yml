@@ -1,7 +1,7 @@
 ---
 - name: Fact is harden_ssh_port is set to 22
   set_fact:
-    is_default_port: (harden_ssh_port | int) == 22
+    is_default_port: "{{ (harden_ssh_port | int) == 22 }}"
 
 - debug: var=harden_ssh_port
 - debug: var=is_default_port
