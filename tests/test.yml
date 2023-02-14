@@ -2,4 +2,4 @@
 - hosts: localhost
   remote_user: root
   roles:
-    - harden_ssh
+    - ansible_harden_ssh
