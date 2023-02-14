@@ -20,7 +20,7 @@
 
 - name: Fact if port needs change
   set_fact:
-    needs_port_change: "{{ r_default_ssh is defined and r_default_ssh is not failed }}"
+    needs_port_change: "{{ (r_default_ssh is defined) and (r_default_ssh is not failed) }}"
 
 - debug: var=r_default_ssh
 - debug: var=needs_port_change
