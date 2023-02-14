@@ -13,11 +13,14 @@
   ignore_errors: true
   delegate_to: localhost
   register: r_default_ssh
-  when: not is_default_port
 
 - name: Fact if port needs change
   set_fact:
-    needs_port_change: "{{ r_default_ssh.failed is defined and r_default_ssh is not failed }}"
+    needs_port_change: >-
+      {{ 
+      (is_default_port and r_default_ssh.failed) or 
+      (not is_default_port and r_default_ssh.failed is defined and not r_default_ssh.failed) 
+      }}
 
 - name: Fact temporary configured_port
   set_fact:
