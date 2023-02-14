@@ -1,3 +1,2 @@
 ---
 harden_ssh_port: "{{ ansible_port }}"
-...

@@ -75,4 +75,3 @@
     port: "{{ harden_ssh_port }}"
     proto: tcp
   when: is_ufw_installed
-...
