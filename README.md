@@ -1,2 +1,2 @@
-# ansible_harden_ssh
+# harden_ssh
 Ansible role to harden ssh
