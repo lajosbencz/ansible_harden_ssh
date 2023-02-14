@@ -60,7 +60,7 @@
 
 - name: Fact is ufw installed
   set_fact:
-    is_ufw_installed: 'ufw' in ansible_facts.packages
+    is_ufw_installed: "'ufw' in ansible_facts.packages"
 
 - name: Remove ufw 22/tcp
   ufw:
