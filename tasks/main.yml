@@ -3,6 +3,9 @@
   set_fact:
     is_default_port: (harden_ssh_port | int) == 22
 
+- debug: var=harden_ssh_port
+- debug: var=is_default_port
+
 - name: Check if ssh is open on 22
   wait_for:
     host: "{{ ansible_host }}"
@@ -18,6 +21,9 @@
 - name: Fact if port needs change
   set_fact:
     needs_port_change: "{{ r_default_ssh is defined and r_default_ssh is not failed }}"
+
+- debug: var=r_default_ssh
+- debug: var=needs_port_change
 
 - name: Fact temporary configured_port
   set_fact:
@@ -43,6 +49,8 @@
     line: "PermitRootLogin without-password"
   register: r_root_pw
 
+- debug: var=r_root_pw
+
 - name: Reload sshd
   systemd:
     name: sshd
@@ -61,6 +69,8 @@
 - name: Fact is ufw installed
   set_fact:
     is_ufw_installed: "'ufw' in ansible_facts.packages"
+
+- debug: var=is_ufw_installed
 
 - name: Remove ufw 22/tcp
   ufw:
