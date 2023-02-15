@@ -47,7 +47,7 @@
   register: r_root_pw
 
 - name: Reload sshd
-  systemd:
+  service:
     name: sshd
     state: reloaded
   when: needs_port_change or r_root_pw.changed
